@@ -86,14 +86,18 @@
     .player {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 12px;
       min-height: 46px;
     }
 
+    .side.right .player {
+      justify-content: flex-end;
+    }
+
     .player-name {
       min-width: 0;
-      max-width: 68%;
+      max-width: 100%;
       padding: 6px 0;
       border-bottom: 2px solid rgba(255, 255, 255, 0.32);
       color: var(--soft-white);
@@ -111,20 +115,6 @@
       border-bottom-color: var(--white);
     }
 
-    .frame-score {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: clamp(58px, 7vw, 96px);
-      height: clamp(34px, 4.5vw, 52px);
-      border: 1px solid rgba(255, 255, 255, 0.34);
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.16);
-      color: rgba(255, 255, 255, 0.9);
-      font-size: clamp(15px, 1.7vw, 22px);
-      font-weight: 800;
-    }
-
     .score-area {
       display: flex;
       flex-direction: column;
@@ -135,8 +125,18 @@
       text-align: center;
     }
 
+    .score-layout {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: min(100%, clamp(310px, 42vw, 520px));
+      height: clamp(230px, 57vh, 340px);
+    }
+
     .score {
-      font-size: clamp(92px, 20vw, 230px);
+      position: relative;
+      z-index: 1;
+      font-size: clamp(82px, 15vw, 190px);
       font-weight: 900;
       line-height: 0.86;
       letter-spacing: 0;
@@ -145,19 +145,19 @@
     }
 
     .balls {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(42px, 1fr));
-      width: min(100%, 520px);
-      gap: clamp(7px, 1.1vw, 14px);
-      align-items: center;
-      justify-items: center;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
     }
 
     .ball {
-      position: relative;
+      --ball-size: clamp(62px, 7.4vw, 102px);
       display: inline-grid;
       place-items: center;
-      width: clamp(42px, 6.2vw, 76px);
+      position: absolute;
+      width: var(--ball-size);
       aspect-ratio: 1;
       border-radius: 50%;
       border: 2px solid rgba(255, 255, 255, 0.88);
@@ -166,9 +166,11 @@
         inset 6px 7px 13px rgba(255, 255, 255, 0.26),
         0 10px 20px rgba(0, 0, 0, 0.25);
       color: #fff;
-      font-size: clamp(16px, 2vw, 25px);
+      font-size: clamp(21px, 2.5vw, 34px);
       font-weight: 900;
       line-height: 1;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
     }
 
     .ball::before {
@@ -184,31 +186,45 @@
     }
 
     .ball.red {
+      left: 50%;
+      top: 12%;
       background: #d11124;
     }
 
     .ball.yellow {
+      left: 17%;
+      top: 42%;
       background: #f1d22b;
       color: #171717;
     }
 
     .ball.green {
+      left: 17%;
+      top: 63%;
       background: #138340;
     }
 
     .ball.brown {
+      left: 83%;
+      top: 42%;
       background: #714323;
     }
 
     .ball.blue {
+      left: 83%;
+      top: 63%;
       background: #145ee5;
     }
 
     .ball.pink {
+      left: 41%;
+      top: 88%;
       background: #ea71a8;
     }
 
     .ball.black {
+      left: 59%;
+      top: 88%;
       background: #141414;
     }
 
@@ -253,6 +269,30 @@
       box-shadow:
         0 18px 34px rgba(0, 0, 0, 0.4),
         0 0 0 8px rgba(255, 255, 255, 0.1);
+    }
+
+    .leader {
+      position: absolute;
+      left: 50%;
+      top: calc(50% - clamp(72px, 9.8vw, 124px));
+      z-index: 5;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      width: clamp(144px, 20vw, 250px);
+      min-height: clamp(34px, 4.4vw, 48px);
+      padding: 6px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 8px;
+      background: rgba(17, 18, 23, 0.82);
+      color: #fff;
+      font-size: clamp(13px, 1.55vw, 18px);
+      font-weight: 900;
+      line-height: 1.15;
+      text-align: center;
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
     }
 
     .divider {
@@ -322,10 +362,13 @@
     }
 
     .control:active,
-    .ball:active,
     .reset:active,
     .confirm-button:active {
       transform: translateY(1px) scale(0.98);
+    }
+
+    .ball:active {
+      transform: translate(-50%, calc(-50% + 1px)) scale(0.98);
     }
 
     .reset:active {
@@ -375,8 +418,25 @@
         gap: 8px;
       }
 
+      .score-layout {
+        height: clamp(198px, 56vh, 240px);
+        width: min(100%, 360px);
+      }
+
       .score {
-        font-size: clamp(74px, 18vw, 160px);
+        font-size: clamp(70px, 13vw, 145px);
+      }
+
+      .ball {
+        --ball-size: clamp(50px, 6.3vw, 70px);
+        font-size: clamp(17px, 2vw, 24px);
+      }
+
+      .leader {
+        top: calc(50% - 64px);
+        width: 150px;
+        min-height: 32px;
+        font-size: 13px;
       }
 
       .controls {
@@ -419,24 +479,25 @@
 </head>
 <body>
   <main class="scoreboard" aria-label="斯诺克计分器">
-    <section class="side left" aria-label="左方计分区">
+    <section class="side left" aria-label="红方计分区">
       <header class="player">
-        <div class="player-name" contenteditable="true" spellcheck="false" data-player-name="left">左方</div>
-        <div class="frame-score" aria-label="本局分数">本局</div>
+        <div class="player-name" contenteditable="true" spellcheck="false" data-player-name="left">红方</div>
       </header>
       <div class="score-area">
-        <output class="score" data-score="left" aria-live="polite">0</output>
-        <div class="balls" aria-label="左方加分">
-          <button class="ball red" type="button" data-side="left" data-points="1" aria-label="左方加1分">+1</button>
-          <button class="ball yellow" type="button" data-side="left" data-points="2" aria-label="左方加2分">+2</button>
-          <button class="ball green" type="button" data-side="left" data-points="3" aria-label="左方加3分">+3</button>
-          <button class="ball brown" type="button" data-side="left" data-points="4" aria-label="左方加4分">+4</button>
-          <button class="ball blue" type="button" data-side="left" data-points="5" aria-label="左方加5分">+5</button>
-          <button class="ball pink" type="button" data-side="left" data-points="6" aria-label="左方加6分">+6</button>
-          <button class="ball black" type="button" data-side="left" data-points="7" aria-label="左方加7分">+7</button>
+        <div class="score-layout">
+          <output class="score" data-score="left" aria-live="polite">0</output>
+          <div class="balls" aria-label="红方加分">
+            <button class="ball red" type="button" data-side="left" data-points="1" aria-label="红方加1分">+1</button>
+            <button class="ball yellow" type="button" data-side="left" data-points="2" aria-label="红方加2分">+2</button>
+            <button class="ball green" type="button" data-side="left" data-points="3" aria-label="红方加3分">+3</button>
+            <button class="ball brown" type="button" data-side="left" data-points="4" aria-label="红方加4分">+4</button>
+            <button class="ball blue" type="button" data-side="left" data-points="5" aria-label="红方加5分">+5</button>
+            <button class="ball pink" type="button" data-side="left" data-points="6" aria-label="红方加6分">+6</button>
+            <button class="ball black" type="button" data-side="left" data-points="7" aria-label="红方加7分">+7</button>
+          </div>
         </div>
       </div>
-      <footer class="controls" aria-label="左方操作">
+      <footer class="controls" aria-label="红方操作">
         <button class="control" type="button" data-action="undo" data-side="left">撤销</button>
         <button class="control" type="button" data-action="redo" data-side="left">重做</button>
         <button class="control" type="button" data-action="minus" data-side="left">减 1</button>
@@ -444,6 +505,7 @@
     </section>
 
     <div class="divider" aria-hidden="true"></div>
+    <div class="leader" data-leader aria-live="polite">双方平分</div>
     <button class="reset" type="button" data-action="reset" aria-label="重置比分">重置</button>
 
     <div class="confirm-overlay" data-reset-confirm hidden>
@@ -456,24 +518,25 @@
       </div>
     </div>
 
-    <section class="side right" aria-label="右方计分区">
+    <section class="side right" aria-label="蓝方计分区">
       <header class="player">
-        <div class="frame-score" aria-label="本局分数">本局</div>
-        <div class="player-name" contenteditable="true" spellcheck="false" data-player-name="right">右方</div>
+        <div class="player-name" contenteditable="true" spellcheck="false" data-player-name="right">蓝方</div>
       </header>
       <div class="score-area">
-        <output class="score" data-score="right" aria-live="polite">0</output>
-        <div class="balls" aria-label="右方加分">
-          <button class="ball red" type="button" data-side="right" data-points="1" aria-label="右方加1分">+1</button>
-          <button class="ball yellow" type="button" data-side="right" data-points="2" aria-label="右方加2分">+2</button>
-          <button class="ball green" type="button" data-side="right" data-points="3" aria-label="右方加3分">+3</button>
-          <button class="ball brown" type="button" data-side="right" data-points="4" aria-label="右方加4分">+4</button>
-          <button class="ball blue" type="button" data-side="right" data-points="5" aria-label="右方加5分">+5</button>
-          <button class="ball pink" type="button" data-side="right" data-points="6" aria-label="右方加6分">+6</button>
-          <button class="ball black" type="button" data-side="right" data-points="7" aria-label="右方加7分">+7</button>
+        <div class="score-layout">
+          <output class="score" data-score="right" aria-live="polite">0</output>
+          <div class="balls" aria-label="蓝方加分">
+            <button class="ball red" type="button" data-side="right" data-points="1" aria-label="蓝方加1分">+1</button>
+            <button class="ball yellow" type="button" data-side="right" data-points="2" aria-label="蓝方加2分">+2</button>
+            <button class="ball green" type="button" data-side="right" data-points="3" aria-label="蓝方加3分">+3</button>
+            <button class="ball brown" type="button" data-side="right" data-points="4" aria-label="蓝方加4分">+4</button>
+            <button class="ball blue" type="button" data-side="right" data-points="5" aria-label="蓝方加5分">+5</button>
+            <button class="ball pink" type="button" data-side="right" data-points="6" aria-label="蓝方加6分">+6</button>
+            <button class="ball black" type="button" data-side="right" data-points="7" aria-label="蓝方加7分">+7</button>
+          </div>
         </div>
       </div>
-      <footer class="controls" aria-label="右方操作">
+      <footer class="controls" aria-label="蓝方操作">
         <button class="control" type="button" data-action="undo" data-side="right">撤销</button>
         <button class="control" type="button" data-action="redo" data-side="right">重做</button>
         <button class="control" type="button" data-action="minus" data-side="right">减 1</button>
@@ -484,13 +547,14 @@
   <script>
     const STORAGE_KEY = "snooker-scoreboard-state-v1";
     const defaultState = {
-      left: { name: "左方", score: 0, history: [], future: [] },
-      right: { name: "右方", score: 0, history: [], future: [] }
+      left: { name: "红方", score: 0, history: [], future: [] },
+      right: { name: "蓝方", score: 0, history: [], future: [] }
     };
 
     let state = loadState();
     const resetConfirm = document.querySelector("[data-reset-confirm]");
     const resetConfirmButton = document.querySelector('[data-action="reset-confirm"]');
+    const leader = document.querySelector("[data-leader]");
 
     function loadState() {
       try {
@@ -506,11 +570,18 @@
 
     function normalizeSide(side, fallback) {
       return {
-        name: typeof side?.name === "string" && side.name.trim() ? side.name : fallback.name,
+        name: normalizeName(side?.name, fallback.name),
         score: Number.isFinite(side?.score) ? Math.max(0, Math.round(side.score)) : fallback.score,
         history: Array.isArray(side?.history) ? side.history.filter(Number.isFinite).slice(-100) : [],
         future: Array.isArray(side?.future) ? side.future.filter(Number.isFinite).slice(-100) : []
       };
+    }
+
+    function normalizeName(name, fallback) {
+      if (typeof name !== "string" || !name.trim()) return fallback;
+      const trimmed = name.trim();
+      if (trimmed === "左方" || trimmed === "右方") return fallback;
+      return trimmed;
     }
 
     function saveState() {
@@ -526,11 +597,24 @@
         name.textContent = state[side].name;
       }
       bump(score);
+      renderLeader();
     }
 
     function renderAll() {
       render("left");
       render("right");
+      renderLeader();
+    }
+
+    function renderLeader() {
+      const diff = state.left.score - state.right.score;
+      if (diff === 0) {
+        leader.textContent = "双方平分";
+        return;
+      }
+
+      const side = diff > 0 ? "left" : "right";
+      leader.textContent = `${state[side].name}领先 ${Math.abs(diff)} 分`;
     }
 
     function bump(element) {
