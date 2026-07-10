@@ -126,8 +126,8 @@
     }
 
     .score-layout {
-      --ball-size: clamp(56px, 6.6vw, 82px);
-      --ball-gap: clamp(5px, 0.6vw, 10px);
+      --ball-size: clamp(62px, 7.2vw, 90px);
+      --ball-gap: clamp(7px, 0.75vw, 12px);
       position: relative;
       display: grid;
       grid-template-columns: repeat(5, var(--ball-size));
@@ -178,7 +178,7 @@
         inset 6px 7px 13px rgba(255, 255, 255, 0.26),
         0 10px 20px rgba(0, 0, 0, 0.25);
       color: #fff;
-      font-size: clamp(21px, 2.5vw, 34px);
+      font-size: clamp(23px, 2.7vw, 36px);
       font-weight: 900;
       line-height: 1;
       pointer-events: auto;
@@ -197,45 +197,50 @@
     }
 
     .ball.red {
-      grid-column: 3;
-      grid-row: 1;
+      grid-column: 1;
+      grid-row: 3;
       background: #d11124;
+    }
+
+    .side.right .ball.red {
+      grid-column: 5;
+      grid-row: 3;
     }
 
     .ball.yellow {
       grid-column: 2;
-      grid-row: 2;
+      grid-row: 5;
       background: #f1d22b;
       color: #171717;
     }
 
     .ball.green {
       grid-column: 3;
-      grid-row: 2;
+      grid-row: 5;
       background: #138340;
     }
 
     .ball.brown {
       grid-column: 4;
-      grid-row: 2;
+      grid-row: 5;
       background: #714323;
     }
 
     .ball.blue {
       grid-column: 2;
-      grid-row: 5;
+      grid-row: 2;
       background: #145ee5;
     }
 
     .ball.pink {
       grid-column: 3;
-      grid-row: 5;
+      grid-row: 2;
       background: #ea71a8;
     }
 
     .ball.black {
       grid-column: 4;
-      grid-row: 5;
+      grid-row: 2;
       background: #141414;
     }
 
@@ -425,12 +430,12 @@
       }
 
       .score-layout {
-        --ball-size: clamp(44px, 13svmin, 58px);
-        --ball-gap: 4px;
+        --ball-size: clamp(48px, 14svmin, 64px);
+        --ball-gap: 5px;
       }
 
       .ball {
-        font-size: clamp(18px, 5.2svmin, 28px);
+        font-size: clamp(19px, 5.6svmin, 30px);
       }
 
     }
@@ -451,8 +456,8 @@
       }
 
       .score-layout {
-        --ball-size: clamp(44px, 5.6vw, 60px);
-        --ball-gap: 5px;
+        --ball-size: clamp(48px, 6.2vw, 66px);
+        --ball-gap: 6px;
       }
 
       .score {
@@ -460,7 +465,7 @@
       }
 
       .ball {
-        font-size: clamp(17px, 2vw, 24px);
+        font-size: clamp(18px, 2.15vw, 25px);
       }
 
       .leader {
