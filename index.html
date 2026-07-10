@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <title>斯诺克计分器</title>
+  <style>
+    :root {
+      --left-bg: #b80f1b;
+      --right-bg: #0f4db8;
+      --white: #ffffff;
+      --ink: #111217;
+      --soft-white: rgba(255, 255, 255, 0.84);
+      --panel-shadow: rgba(0, 0, 0, 0.24);
+      --control-bg: rgba(255, 255, 255, 0.14);
+      --control-border: rgba(255, 255, 255, 0.34);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #101116;
+      color: var(--white);
+    }
+
+    body {
+      min-height: 100svh;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    button {
+      border: 0;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .scoreboard {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100vw;
+      height: 100svh;
+      min-width: 640px;
+      min-height: 320px;
+      isolation: isolate;
+    }
+
+    .side {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: clamp(12px, 2.4vh, 24px);
+      padding: max(16px, env(safe-area-inset-top))
+        clamp(18px, 3vw, 46px)
+        max(18px, env(safe-area-inset-bottom));
+      box-shadow: inset 0 0 80px var(--panel-shadow);
+      overflow: hidden;
+    }
+
+    .side.left {
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.16), transparent 26%),
+        linear-gradient(135deg, #cf1928 0%, var(--left-bg) 52%, #790812 100%);
+      padding-right: clamp(34px, 5.3vw, 74px);
+    }
+
+    .side.right {
+      background:
+        radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.16), transparent 26%),
+        linear-gradient(225deg, #1d6be0 0%, var(--right-bg) 52%, #08275f 100%);
+      padding-left: clamp(34px, 5.3vw, 74px);
+    }
+
+    .player {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 46px;
+    }
+
+    .player-name {
+      min-width: 0;
+      max-width: 68%;
+      padding: 6px 0;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.32);
+      color: var(--soft-white);
+      font-size: clamp(18px, 2.6vw, 32px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: 0;
+      outline: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-name:focus {
+      border-bottom-color: var(--white);
+    }
+
+    .frame-score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: clamp(58px, 7vw, 96px);
+      height: clamp(34px, 4.5vw, 52px);
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.16);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: clamp(15px, 1.7vw, 22px);
+      font-weight: 800;
+    }
+
+    .score-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      gap: clamp(10px, 2vh, 24px);
+      text-align: center;
+    }
+
+    .score {
+      font-size: clamp(92px, 20vw, 230px);
+      font-weight: 900;
+      line-height: 0.86;
+      letter-spacing: 0;
+      text-shadow: 0 10px 32px rgba(0, 0, 0, 0.28);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .balls {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(42px, 1fr));
+      width: min(100%, 520px);
+      gap: clamp(7px, 1.1vw, 14px);
+      align-items: center;
+      justify-items: center;
+    }
+
+    .ball {
+      position: relative;
+      display: inline-grid;
+      place-items: center;
+      width: clamp(42px, 6.2vw, 76px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.88);
+      box-shadow:
+        inset -9px -12px 18px rgba(0, 0, 0, 0.3),
+        inset 6px 7px 13px rgba(255, 255, 255, 0.26),
+        0 10px 20px rgba(0, 0, 0, 0.25);
+      color: #fff;
+      font-size: clamp(16px, 2vw, 25px);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .ball::before {
+      content: "";
+      position: absolute;
+      top: 17%;
+      left: 22%;
+      width: 25%;
+      height: 17%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.42);
+      filter: blur(1px);
+    }
+
+    .ball.red {
+      background: #d11124;
+    }
+
+    .ball.yellow {
+      background: #f1d22b;
+      color: #171717;
+    }
+
+    .ball.green {
+      background: #138340;
+    }
+
+    .ball.brown {
+      background: #714323;
+    }
+
+    .ball.blue {
+      background: #145ee5;
+    }
+
+    .ball.pink {
+      background: #ea71a8;
+    }
+
+    .ball.black {
+      background: #141414;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(10px, 1.4vw, 18px);
+      width: min(100%, 420px);
+      margin: 0 auto;
+    }
+
+    .control {
+      min-height: clamp(46px, 6.4vh, 64px);
+      border: 1px solid var(--control-border);
+      border-radius: 8px;
+      background: var(--control-bg);
+      color: #fff;
+      font-size: clamp(17px, 2vw, 24px);
+      font-weight: 850;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(8px);
+    }
+
+    .reset {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 5;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      width: clamp(70px, 9.5vw, 112px);
+      aspect-ratio: 1;
+      border: 3px solid rgba(255, 255, 255, 0.96);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.28), transparent 30%),
+        #111217;
+      color: #fff;
+      font-size: clamp(17px, 2vw, 25px);
+      font-weight: 900;
+      box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.4),
+        0 0 0 8px rgba(255, 255, 255, 0.1);
+    }
+
+    .divider {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      z-index: 2;
+      width: 2px;
+      height: 100%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.64);
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.42);
+      pointer-events: none;
+    }
+
+    .control:active,
+    .ball:active,
+    .reset:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .reset:active {
+      transform: translate(-50%, calc(-50% + 1px)) scale(0.98);
+    }
+
+    .control:focus-visible,
+    .ball:focus-visible,
+    .reset:focus-visible {
+      outline: 3px solid rgba(255, 255, 255, 0.78);
+      outline-offset: 3px;
+    }
+
+    @media (orientation: portrait) {
+      html,
+      body {
+        overflow: auto;
+      }
+
+      .scoreboard {
+        width: 100svh;
+        height: 100svw;
+        min-width: 620px;
+        min-height: 330px;
+        transform: rotate(90deg) translateY(-100%);
+        transform-origin: top left;
+      }
+
+    }
+
+    @media (max-height: 390px) {
+      .side {
+        gap: 8px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
+      .player {
+        min-height: 34px;
+      }
+
+      .score-area {
+        gap: 8px;
+      }
+
+      .score {
+        font-size: clamp(74px, 18vw, 160px);
+      }
+
+      .controls {
+        width: min(100%, 360px);
+      }
+
+      .control {
+        min-height: 40px;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .score {
+        transition: transform 140ms ease;
+      }
+
+      .score.bump {
+        transform: scale(1.055);
+      }
+
+      .control,
+      .ball,
+      .reset {
+        transition:
+          transform 120ms ease,
+          filter 120ms ease,
+          background-color 120ms ease;
+      }
+
+      .control:hover,
+      .ball:hover,
+      .reset:hover {
+        filter: brightness(1.08);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="scoreboard" aria-label="斯诺克计分器">
+    <section class="side left" aria-label="左方计分区">
+      <header class="player">
+        <div class="player-name" contenteditable="true" spellcheck="false" data-player-name="left">左方</div>
+        <div class="frame-score" aria-label="本局分数">本局</div>
+      </header>
+      <div class="score-area">
+        <output class="score" data-score="left" aria-live="polite">0</output>
+        <div class="balls" aria-label="左方加分">
+          <button class="ball red" type="button" data-side="left" data-points="1" aria-label="左方加1分">+1</button>
+          <button class="ball yellow" type="button" data-side="left" data-points="2" aria-label="左方加2分">+2</button>
+          <button class="ball green" type="button" data-side="left" data-points="3" aria-label="左方加3分">+3</button>
+          <button class="ball brown" type="button" data-side="left" data-points="4" aria-label="左方加4分">+4</button>
+          <button class="ball blue" type="button" data-side="left" data-points="5" aria-label="左方加5分">+5</button>
+          <button class="ball pink" type="button" data-side="left" data-points="6" aria-label="左方加6分">+6</button>
+          <button class="ball black" type="button" data-side="left" data-points="7" aria-label="左方加7分">+7</button>
+        </div>
+      </div>
+      <footer class="controls" aria-label="左方操作">
+        <button class="control" type="button" data-action="undo" data-side="left">撤销</button>
+        <button class="control" type="button" data-action="minus" data-side="left">减 1</button>
+      </footer>
+    </section>
+
+    <div class="divider" aria-hidden="true"></div>
+    <button class="reset" type="button" data-action="reset" aria-label="重置比分">重置</button>
+
+    <section class="side right" aria-label="右方计分区">
+      <header class="player">
+        <div class="frame-score" aria-label="本局分数">本局</div>
+        <div class="player-name" contenteditable="true" spellcheck="false" data-player-name="right">右方</div>
+      </header>
+      <div class="score-area">
+        <output class="score" data-score="right" aria-live="polite">0</output>
+        <div class="balls" aria-label="右方加分">
+          <button class="ball red" type="button" data-side="right" data-points="1" aria-label="右方加1分">+1</button>
+          <button class="ball yellow" type="button" data-side="right" data-points="2" aria-label="右方加2分">+2</button>
+          <button class="ball green" type="button" data-side="right" data-points="3" aria-label="右方加3分">+3</button>
+          <button class="ball brown" type="button" data-side="right" data-points="4" aria-label="右方加4分">+4</button>
+          <button class="ball blue" type="button" data-side="right" data-points="5" aria-label="右方加5分">+5</button>
+          <button class="ball pink" type="button" data-side="right" data-points="6" aria-label="右方加6分">+6</button>
+          <button class="ball black" type="button" data-side="right" data-points="7" aria-label="右方加7分">+7</button>
+        </div>
+      </div>
+      <footer class="controls" aria-label="右方操作">
+        <button class="control" type="button" data-action="undo" data-side="right">撤销</button>
+        <button class="control" type="button" data-action="minus" data-side="right">减 1</button>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "snooker-scoreboard-state-v1";
+    const defaultState = {
+      left: { name: "左方", score: 0, history: [] },
+      right: { name: "右方", score: 0, history: [] }
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return {
+          left: normalizeSide(stored && stored.left, defaultState.left),
+          right: normalizeSide(stored && stored.right, defaultState.right)
+        };
+      } catch {
+        return structuredClone(defaultState);
+      }
+    }
+
+    function normalizeSide(side, fallback) {
+      return {
+        name: typeof side?.name === "string" && side.name.trim() ? side.name : fallback.name,
+        score: Number.isFinite(side?.score) ? Math.max(0, Math.round(side.score)) : fallback.score,
+        history: Array.isArray(side?.history) ? side.history.filter(Number.isFinite).slice(-100) : []
+      };
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function render(side) {
+      const score = document.querySelector(`[data-score="${side}"]`);
+      const name = document.querySelector(`[data-player-name="${side}"]`);
+      score.value = state[side].score;
+      score.textContent = state[side].score;
+      if (document.activeElement !== name) {
+        name.textContent = state[side].name;
+      }
+      bump(score);
+    }
+
+    function renderAll() {
+      render("left");
+      render("right");
+    }
+
+    function bump(element) {
+      element.classList.remove("bump");
+      window.requestAnimationFrame(() => {
+        element.classList.add("bump");
+        window.setTimeout(() => element.classList.remove("bump"), 160);
+      });
+    }
+
+    function changeScore(side, delta) {
+      const current = state[side].score;
+      const next = Math.max(0, current + delta);
+      if (next === current && delta < 0) return;
+      state[side].history.push(current);
+      state[side].history = state[side].history.slice(-100);
+      state[side].score = next;
+      saveState();
+      render(side);
+    }
+
+    function undo(side) {
+      const previous = state[side].history.pop();
+      if (!Number.isFinite(previous)) return;
+      state[side].score = previous;
+      saveState();
+      render(side);
+    }
+
+    function resetScores() {
+      state.left.history.push(state.left.score);
+      state.right.history.push(state.right.score);
+      state.left.history = state.left.history.slice(-100);
+      state.right.history = state.right.history.slice(-100);
+      state.left.score = 0;
+      state.right.score = 0;
+      saveState();
+      renderAll();
+    }
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("button");
+      if (!button) return;
+
+      const side = button.dataset.side;
+      const points = Number(button.dataset.points);
+      const action = button.dataset.action;
+
+      if (side && Number.isFinite(points)) {
+        changeScore(side, points);
+        return;
+      }
+
+      if (action === "minus" && side) {
+        changeScore(side, -1);
+        return;
+      }
+
+      if (action === "undo" && side) {
+        undo(side);
+        return;
+      }
+
+      if (action === "reset") {
+        resetScores();
+      }
+    });
+
+    document.querySelectorAll("[data-player-name]").forEach(nameNode => {
+      nameNode.addEventListener("input", () => {
+        const side = nameNode.dataset.playerName;
+        state[side].name = nameNode.textContent.trim() || defaultState[side].name;
+        saveState();
+      });
+
+      nameNode.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          nameNode.blur();
+        }
+      });
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
