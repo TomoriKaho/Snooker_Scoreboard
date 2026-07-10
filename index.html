@@ -127,21 +127,23 @@
 
     .score-layout {
       --ball-size: clamp(62px, 7.2vw, 90px);
-      --ball-gap: clamp(7px, 0.75vw, 12px);
+      --ball-gap: clamp(10px, 1.4vw, 18px);
       position: relative;
       display: grid;
-      grid-template-columns: repeat(5, var(--ball-size));
-      grid-template-rows: repeat(5, var(--ball-size));
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(6, var(--ball-size));
       gap: var(--ball-gap);
       place-items: center;
-      width: calc(var(--ball-size) * 5 + var(--ball-gap) * 4);
-      height: calc(var(--ball-size) * 5 + var(--ball-gap) * 4);
+      width: min(100%, 520px);
+      height: calc(var(--ball-size) * 6 + var(--ball-gap) * 5);
+      margin: 0 auto;
       max-width: 100%;
+      transform: translateY(calc(-1 * clamp(28px, 5vh, 52px)));
     }
 
     .score {
       position: relative;
-      grid-column: 2 / 5;
+      grid-column: 1 / -1;
       grid-row: 3 / 5;
       z-index: 1;
       font-size: clamp(98px, 17.85vw, 224px);
@@ -153,12 +155,13 @@
     }
 
     .balls {
+      position: relative;
       z-index: 2;
       grid-column: 1 / -1;
       grid-row: 1 / -1;
       display: grid;
-      grid-template-columns: repeat(5, var(--ball-size));
-      grid-template-rows: repeat(5, var(--ball-size));
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(6, var(--ball-size));
       gap: var(--ball-gap);
       width: 100%;
       height: 100%;
@@ -171,6 +174,8 @@
       position: relative;
       width: var(--ball-size);
       aspect-ratio: 1;
+      justify-self: center;
+      align-self: center;
       border-radius: 50%;
       border: 2px solid rgba(255, 255, 255, 0.88);
       box-shadow:
@@ -198,49 +203,50 @@
 
     .ball.red {
       grid-column: 1;
-      grid-row: 3;
+      grid-row: 3 / 5;
+      justify-self: start;
       background: #d11124;
     }
 
     .side.right .ball.red {
-      grid-column: 5;
-      grid-row: 3;
+      grid-column: 3;
+      justify-self: end;
     }
 
     .ball.yellow {
-      grid-column: 2;
-      grid-row: 5;
+      grid-column: 1;
+      grid-row: 6;
       background: #f1d22b;
       color: #171717;
     }
 
     .ball.green {
-      grid-column: 3;
-      grid-row: 5;
+      grid-column: 2;
+      grid-row: 6;
       background: #138340;
     }
 
     .ball.brown {
-      grid-column: 4;
-      grid-row: 5;
+      grid-column: 3;
+      grid-row: 6;
       background: #714323;
     }
 
     .ball.blue {
-      grid-column: 2;
-      grid-row: 2;
+      grid-column: 1;
+      grid-row: 1;
       background: #145ee5;
     }
 
     .ball.pink {
-      grid-column: 3;
-      grid-row: 2;
+      grid-column: 2;
+      grid-row: 1;
       background: #ea71a8;
     }
 
     .ball.black {
-      grid-column: 4;
-      grid-row: 2;
+      grid-column: 3;
+      grid-row: 1;
       background: #141414;
     }
 
@@ -431,7 +437,8 @@
 
       .score-layout {
         --ball-size: clamp(48px, 14svmin, 64px);
-        --ball-gap: 5px;
+        --ball-gap: 10px;
+        transform: translateY(-24px);
       }
 
       .ball {
@@ -457,7 +464,8 @@
 
       .score-layout {
         --ball-size: clamp(48px, 6.2vw, 66px);
-        --ball-gap: 6px;
+        --ball-gap: 10px;
+        transform: translateY(-22px);
       }
 
       .score {
