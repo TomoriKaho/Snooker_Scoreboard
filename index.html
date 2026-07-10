@@ -61,10 +61,10 @@
     .side {
       display: grid;
       grid-template-rows: auto 1fr auto;
-      gap: clamp(12px, 2.4vh, 24px);
-      padding: max(16px, env(safe-area-inset-top))
-        clamp(18px, 3vw, 46px)
-        max(18px, env(safe-area-inset-bottom));
+      gap: clamp(6px, 1.6vh, 16px);
+      padding: max(10px, env(safe-area-inset-top))
+        clamp(14px, 2.4vw, 36px)
+        max(10px, env(safe-area-inset-bottom));
       box-shadow: inset 0 0 80px var(--panel-shadow);
       overflow: hidden;
     }
@@ -73,14 +73,14 @@
       background:
         radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.16), transparent 26%),
         linear-gradient(135deg, #cf1928 0%, var(--left-bg) 52%, #790812 100%);
-      padding-right: clamp(34px, 5.3vw, 74px);
+      padding-right: clamp(26px, 3.8vw, 56px);
     }
 
     .side.right {
       background:
         radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.16), transparent 26%),
         linear-gradient(225deg, #1d6be0 0%, var(--right-bg) 52%, #08275f 100%);
-      padding-left: clamp(34px, 5.3vw, 74px);
+      padding-left: clamp(26px, 3.8vw, 56px);
     }
 
     .player {
@@ -88,7 +88,7 @@
       align-items: center;
       justify-content: flex-start;
       gap: 12px;
-      min-height: 46px;
+      min-height: clamp(30px, 4.6vh, 42px);
     }
 
     .side.right .player {
@@ -126,15 +126,23 @@
     }
 
     .score-layout {
+      --ball-size: clamp(66px, 7.85vw, 100px);
+      --ball-gap: clamp(8px, 0.85vw, 14px);
       position: relative;
       display: grid;
+      grid-template-columns: repeat(5, var(--ball-size));
+      grid-template-rows: repeat(4, var(--ball-size));
+      gap: var(--ball-gap);
       place-items: center;
-      width: min(100%, clamp(310px, 42vw, 520px));
-      height: clamp(230px, 57vh, 340px);
+      width: calc(var(--ball-size) * 5 + var(--ball-gap) * 4);
+      height: calc(var(--ball-size) * 4 + var(--ball-gap) * 3);
+      max-width: 100%;
     }
 
     .score {
       position: relative;
+      grid-column: 2 / 5;
+      grid-row: 2 / 4;
       z-index: 1;
       font-size: clamp(82px, 15vw, 190px);
       font-weight: 900;
@@ -145,18 +153,21 @@
     }
 
     .balls {
-      position: absolute;
-      inset: 0;
+      z-index: 2;
+      grid-column: 1 / -1;
+      grid-row: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(5, var(--ball-size));
+      grid-template-rows: repeat(4, var(--ball-size));
+      gap: var(--ball-gap);
       width: 100%;
       height: 100%;
       pointer-events: none;
     }
 
     .ball {
-      --ball-size: clamp(62px, 7.4vw, 102px);
       display: inline-grid;
       place-items: center;
-      position: absolute;
       width: var(--ball-size);
       aspect-ratio: 1;
       border-radius: 50%;
@@ -169,7 +180,6 @@
       font-size: clamp(21px, 2.5vw, 34px);
       font-weight: 900;
       line-height: 1;
-      transform: translate(-50%, -50%);
       pointer-events: auto;
     }
 
@@ -186,45 +196,45 @@
     }
 
     .ball.red {
-      left: 50%;
-      top: 12%;
+      grid-column: 3;
+      grid-row: 1;
       background: #d11124;
     }
 
     .ball.yellow {
-      left: 17%;
-      top: 42%;
+      grid-column: 1;
+      grid-row: 2;
       background: #f1d22b;
       color: #171717;
     }
 
     .ball.green {
-      left: 17%;
-      top: 63%;
+      grid-column: 1;
+      grid-row: 3;
       background: #138340;
     }
 
     .ball.brown {
-      left: 83%;
-      top: 42%;
+      grid-column: 5;
+      grid-row: 2;
       background: #714323;
     }
 
     .ball.blue {
-      left: 83%;
-      top: 63%;
+      grid-column: 5;
+      grid-row: 3;
       background: #145ee5;
     }
 
     .ball.pink {
-      left: 41%;
-      top: 88%;
+      grid-column: 2;
+      grid-row: 4;
       background: #ea71a8;
     }
 
     .ball.black {
-      left: 59%;
-      top: 88%;
+      grid-column: 4;
+      grid-row: 4;
       background: #141414;
     }
 
@@ -237,7 +247,7 @@
     }
 
     .control {
-      min-height: clamp(46px, 6.4vh, 64px);
+      min-height: clamp(38px, 5.4vh, 54px);
       border: 1px solid var(--control-border);
       border-radius: 8px;
       background: var(--control-bg);
@@ -367,10 +377,6 @@
       transform: translateY(1px) scale(0.98);
     }
 
-    .ball:active {
-      transform: translate(-50%, calc(-50% + 1px)) scale(0.98);
-    }
-
     .reset:active {
       transform: translate(-50%, calc(-50% + 1px)) scale(0.98);
     }
@@ -419,8 +425,8 @@
       }
 
       .score-layout {
-        height: clamp(198px, 56vh, 240px);
-        width: min(100%, 360px);
+        --ball-size: clamp(56px, 6.4vw, 72px);
+        --ball-gap: 8px;
       }
 
       .score {
@@ -428,7 +434,6 @@
       }
 
       .ball {
-        --ball-size: clamp(50px, 6.3vw, 70px);
         font-size: clamp(17px, 2vw, 24px);
       }
 
