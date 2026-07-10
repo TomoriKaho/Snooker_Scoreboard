@@ -62,7 +62,7 @@
       display: grid;
       grid-template-rows: auto 1fr auto;
       gap: clamp(6px, 1.6vh, 16px);
-      padding: max(10px, env(safe-area-inset-top))
+      padding: max(14px, calc(env(safe-area-inset-top) + 6px))
         clamp(14px, 2.4vw, 36px)
         max(10px, env(safe-area-inset-bottom));
       box-shadow: inset 0 0 80px var(--panel-shadow);
@@ -127,7 +127,7 @@
 
     .score-layout {
       --ball-size: clamp(66px, 7.85vw, 100px);
-      --ball-gap: clamp(8px, 0.85vw, 14px);
+      --ball-gap: clamp(6px, 0.7vw, 12px);
       position: relative;
       display: grid;
       grid-template-columns: repeat(5, var(--ball-size));
@@ -144,7 +144,7 @@
       grid-column: 2 / 5;
       grid-row: 2 / 4;
       z-index: 1;
-      font-size: clamp(82px, 15vw, 190px);
+      font-size: clamp(98px, 17.85vw, 224px);
       font-weight: 900;
       line-height: 0.86;
       letter-spacing: 0;
@@ -285,25 +285,41 @@
     .leader {
       position: absolute;
       left: 50%;
-      top: calc(50% - clamp(72px, 9.8vw, 124px));
+      top: max(8px, env(safe-area-inset-top));
       z-index: 5;
-      transform: translate(-50%, -50%);
+      transform: translateX(-50%);
       display: grid;
       place-items: center;
-      width: clamp(144px, 20vw, 250px);
-      min-height: clamp(34px, 4.4vw, 48px);
-      padding: 6px 12px;
-      border: 1px solid rgba(255, 255, 255, 0.42);
+      width: clamp(220px, 36vw, 520px);
+      min-height: clamp(48px, 7vh, 76px);
+      padding: 8px 18px;
+      border: 2px solid rgba(255, 255, 255, 0.5);
       border-radius: 8px;
-      background: rgba(17, 18, 23, 0.82);
+      background: rgba(17, 18, 23, 0.88);
       color: #fff;
-      font-size: clamp(13px, 1.55vw, 18px);
+      font-size: clamp(24px, 3.7vw, 48px);
       font-weight: 900;
       line-height: 1.15;
       text-align: center;
       box-shadow: 0 12px 26px rgba(0, 0, 0, 0.32);
       backdrop-filter: blur(8px);
       pointer-events: none;
+    }
+
+    .leader.left-leading {
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.18), transparent 32%),
+        linear-gradient(135deg, #d51d2c 0%, var(--left-bg) 58%, #8b0b15 100%);
+    }
+
+    .leader.right-leading {
+      background:
+        radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.2), transparent 32%),
+        linear-gradient(225deg, #2474eb 0%, var(--right-bg) 58%, #092d6c 100%);
+    }
+
+    .leader.tied {
+      background: rgba(17, 18, 23, 0.88);
     }
 
     .divider {
@@ -413,7 +429,7 @@
     @media (max-height: 390px) {
       .side {
         gap: 8px;
-        padding-top: 10px;
+        padding-top: 12px;
         padding-bottom: 10px;
       }
 
@@ -426,23 +442,23 @@
       }
 
       .score-layout {
-        --ball-size: clamp(56px, 6.4vw, 72px);
-        --ball-gap: 8px;
+        --ball-size: clamp(60px, 7vw, 78px);
+        --ball-gap: 7px;
       }
 
       .score {
-        font-size: clamp(70px, 13vw, 145px);
+        font-size: clamp(88px, 15.4vw, 173px);
       }
 
       .ball {
-        font-size: clamp(17px, 2vw, 24px);
+        font-size: clamp(19px, 2.25vw, 27px);
       }
 
       .leader {
-        top: calc(50% - 64px);
-        width: 150px;
-        min-height: 32px;
-        font-size: 13px;
+        top: 8px;
+        width: clamp(220px, 34vw, 360px);
+        min-height: 42px;
+        font-size: clamp(21px, 3.2vw, 34px);
       }
 
       .controls {
@@ -614,6 +630,9 @@
 
     function renderLeader() {
       const diff = state.left.score - state.right.score;
+      leader.classList.toggle("left-leading", diff > 0);
+      leader.classList.toggle("right-leading", diff < 0);
+      leader.classList.toggle("tied", diff === 0);
       if (diff === 0) {
         leader.textContent = "双方平分";
         return;
